@@ -9,9 +9,8 @@ function Profil() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isCreatingAccount, setIsCreatingAccount] = useState(false); // État pour basculer entre les vues
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false); 
 
-  // Vérifie si l'utilisateur est déjà connecté au chargement du composant
   useEffect(() => {
     const checkLoginStatus = async () => {
       const token = await AsyncStorage.getItem('userToken');
@@ -30,7 +29,7 @@ function Profil() {
 
     console.log("Données envoyées:", { firstName, lastName, password });
 
-    setLoading(true); // Active l'indicateur de chargement
+    setLoading(true);
 
     try {
       const response = await fetch('http://192.168.216.1:5000/api/auth/login', {

@@ -1,42 +1,147 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, TextInput, Button, ToastAndroid } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwtDecode from 'jwt-decode';
+interface DecodedToken {
+  isAdmin: boolean
+  // Ajoutez d'autres propriétés qui existent dans votre JWT si nécessaire
+}
+
+interface Menu {
+  id: number;
+  titre: string;
+  contenu: string;
+}
 
 function Info() {
+  const [menus, setMenus] = useState<Menu[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editingMenuId, setEditingMenuId] = useState<number | null>(null);
+  const [editedMenu, setEditedMenu] = useState<Menu | null>(null);
+
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('authToken');
+        if (token) {
+          const decodedToken = jwtDecode<DecodedToken>(token);
+          if (decodedToken.isAdmin !== undefined) {
+            setIsAdmin(decodedToken.isAdmin); // Utilisez `isAdmin` si c'est ce qui existe dans le JWT
+          }
+        }
+      } catch (error) {
+        console.log("Erreur lors de la vérification du token", error);
+      }
+    };
+
+    checkUserStatus();
+    fetchMenus();
+  }, []);
+
+
+  const fetchMenus = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://192.168.216.1:5000/api/menu');
+      const data = await response.json();
+      setMenus(data);
+    } catch (error) {
+      ToastAndroid.show("Erreur lors de la récupération des menus", ToastAndroid.SHORT);
+      console.error('Error fetching menus:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (field: keyof Menu, value: string) => {
+    if (editedMenu) {
+      setEditedMenu({ ...editedMenu, [field]: value });
+    }
+  };
+
+  const handleEdit = (menu: Menu) => {
+    setEditingMenuId(menu.id);
+    setEditedMenu(menu);
+  };
+
+  const handleSave = async () => {
+    if (editedMenu) {
+      try {
+        const response = await fetch(`http://192.168.216.1:5000/api/menu/${editedMenu.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(editedMenu),
+        });
+
+        if (response.ok) {
+          fetchMenus();  
+          setEditingMenuId(null);
+          setEditedMenu(null);
+        } else {
+          ToastAndroid.show("Erreur lors de la mise à jour du menu", ToastAndroid.SHORT);
+        }
+      } catch (error) {
+        ToastAndroid.show("Erreur lors de la mise à jour du menu", ToastAndroid.SHORT);
+        console.error('Error updating menu:', error);
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingMenuId(null);
+    setEditedMenu(null);
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Ionicons name="information-circle-outline" size={40} color="blue" />
-        <Text style={styles.title}>Santé Mentale et Prévention</Text>
-      </View>
-
-      <Text style={styles.subtitle}>Qu'est-ce que la santé mentale ?</Text>
-      <Text style={styles.text}>
-        La santé mentale désigne un état de bien-être psychologique dans lequel une personne est capable de gérer le stress quotidien, 
-        de travailler de manière productive et de contribuer à la société.
-      </Text>
-
-      <Text style={styles.subtitle}>Facteurs influençant la santé mentale :</Text>
-      <Text style={styles.text}>✔ Facteurs biologiques : génétique, équilibre chimique du cerveau.</Text>
-      <Text style={styles.text}>✔ Facteurs environnementaux : stress, événements traumatisants.</Text>
-      <Text style={styles.text}>✔ Habitudes de vie : alimentation, sommeil, activité physique.</Text>
-      <Text style={styles.text}>✔ Soutien social : famille, amis.</Text>
-
-      <Text style={styles.subtitle}>Prévention et entretien :</Text>
-      <Text style={styles.text}>🧘‍♂️ Pratiquer la relaxation et la méditation.</Text>
-      <Text style={styles.text}>💤 Avoir un sommeil réparateur (7 à 9 heures par nuit).</Text>
-      <Text style={styles.text}>🥗 Adopter une alimentation équilibrée.</Text>
-      <Text style={styles.text}>🏃‍♀️ Faire de l'exercice régulièrement.</Text>
-      <Text style={styles.text}>👥 Maintenir des liens sociaux solides.</Text>
-      <Text style={styles.text}>📱 Limiter l'exposition aux écrans et réseaux sociaux.</Text>
-      <Text style={styles.text}>🆘 Consulter un professionnel en cas de besoin.</Text>
-
-      <Text style={styles.subtitle}>Ressources utiles :</Text>
-      <Text style={styles.text}>📌 OMS (Organisation Mondiale de la Santé) : www.who.int</Text>
-      <Text style={styles.text}>📌 Santé publique France : www.santepubliquefrance.fr</Text>
-      <Text style={styles.text}>📌 Psycom : www.psycom.org</Text>
-      <Text style={styles.text}>📌 Lignes d'écoute gratuites : SOS Amitié (09 72 39 40 50)</Text>
-    </ScrollView>
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollContainer}>
+        <Text style={styles.title}>
+          <Ionicons name="information-circle-outline" size={30} color="blue" />
+          Menu
+        </Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="blue" />
+        ) : (
+          menus.map((menu, index) => (
+            <View key={index} style={styles.menuContainer}>
+              {editingMenuId === menu.id ? (
+                <View>
+                  <TextInput
+                    style={styles.input}
+                    value={editedMenu?.titre}
+                    onChangeText={(text) => handleInputChange('titre', text)}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={editedMenu?.contenu}
+                    onChangeText={(text) => handleInputChange('contenu', text)}
+                    multiline
+                  />
+                  <View style={styles.buttonContainer}>
+                    <Button title="Enregistrer" onPress={handleSave} />
+                    <Button title="Annuler" onPress={handleCancel} color="red" />
+                  </View>
+                </View>
+              ) : (
+                <View>
+                  <Text style={styles.menuTitle}>{menu.titre}</Text>
+                  <Text style={styles.menuContent}>{menu.contenu}</Text>
+                  {isAdmin && (  // Affichage du bouton Modifier uniquement si l'utilisateur est admin
+                    <TouchableOpacity onPress={() => handleEdit(menu)}>
+                      <Text style={styles.editButton}>Modifier</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+            </View>
+          ))
+        )}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -44,29 +149,55 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f8f9fa',
-  },
-  iconContainer: {
-    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
+    backgroundColor: '#f0f0f0',
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: 'blue',
-    marginLeft: 10,
+    marginBottom: 10,
   },
-  subtitle: {
+  scrollContainer: {
+    width: '100%',
+  },
+  menuContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 5,
+  },
+  menuTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 15,
     color: '#333',
   },
-  text: {
+  menuContent: {
     fontSize: 16,
-    marginBottom: 5,
     color: '#555',
+    marginTop: 5,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 8,
+    borderRadius: 5,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  editButton: {
+    color: 'blue',
+    marginTop: 10,
   },
 });
 

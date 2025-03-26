@@ -3,8 +3,9 @@ const cors = require("cors");
 const { Sequelize } = require("sequelize");
 const authRoutes = require("./routes/authRoutes");
 const createUserRoutes = require("./routes/createUserRoutes");
+const menuRoute = require("./routes/menuRoute");
 require("dotenv").config({ path: '.env' });
-console.log("Clé JWT chargée :", process.env.JWT_SECRET);
+const userStatusRoute = require('./routes/userStatusRoutes'); 
 
 
 const port = process.env.PORT || 5000;
@@ -31,6 +32,8 @@ sequelize.authenticate()
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", createUserRoutes);
+app.use('/api', menuRoute); 
+app.use('/api/user-status', userStatusRoute); 
 
 app.listen(port, () => console.log(`🚀 Serveur démarré sur le port ${port}`));
 

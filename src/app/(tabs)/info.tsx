@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, TextInput, Button, ToastAndroid } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode';
+import jwt_decode from 'jwt-decode'; // Ajouté pour décoder le token
+
 interface DecodedToken {
-  isAdmin: boolean
+  isAdmin: boolean;
   // Ajoutez d'autres propriétés qui existent dans votre JWT si nécessaire
 }
 
@@ -22,23 +23,34 @@ function Info() {
   const [editedMenu, setEditedMenu] = useState<Menu | null>(null);
 
   useEffect(() => {
-    const checkUserStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem('authToken');
-        if (token) {
-          const decodedToken = jwtDecode<DecodedToken>(token);
-          if (decodedToken.isAdmin !== undefined) {
-            setIsAdmin(decodedToken.isAdmin); // Utilisez `isAdmin` si c'est ce qui existe dans le JWT
-          }
-        }
-      } catch (error) {
-        console.log("Erreur lors de la vérification du token", error);
-      }
-    };
+  const checkUserStatus = async () => {
+    try {
+      const token = await AsyncStorage.getItem('authToken');
+      if (token) {
+        // Séparer les parties du JWT (header, payload, signature)
+        const base64Url = token.split('.')[1]; 
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
+            .join('')
+        );
 
-    checkUserStatus();
-    fetchMenus();
-  }, []);
+        const decoded = JSON.parse(jsonPayload); 
+
+        if (decoded.id_role === 1) {
+          setIsAdmin(true);
+        }
+      }
+    } catch (error) {
+      console.log("Erreur lors de la vérification du token", error);
+    }
+  };
+
+  checkUserStatus();
+  fetchMenus();
+}, []);
 
 
   const fetchMenus = async () => {
@@ -99,6 +111,11 @@ function Info() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollContainer}>
+        {isAdmin && (
+          <View style={styles.adminBanner}>
+            <Text style={styles.adminText}>Vous êtes Administrateur</Text>
+          </View>
+        )}
         <Text style={styles.title}>
           <Ionicons name="information-circle-outline" size={30} color="blue" />
           Menu
@@ -152,6 +169,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
+  },
+  adminBanner: {
+    backgroundColor: 'lightblue',
+    padding: 10,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  adminText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'darkblue',
   },
   title: {
     fontSize: 24,

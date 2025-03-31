@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const utilisateur = require('../models/utilisateur');
 
@@ -33,11 +34,8 @@ exports.login = async (req, res) => {
       { expiresIn: "1h" }              // Durée d'expiration du token
     );
 
-    // Ajoute un champ "isAdmin" à la réponse, basé sur l'id_role
-    const isAdmin = user.id_role === 1; // Assumant que le rôle 1 est admin
-
-    // Réponse contenant le token et isAdmin
-    res.json({ message: "Connexion réussie", token, isAdmin });
+    // Réponse contenant le token
+    res.json({ message: "Connexion réussie", token });
 
   } catch (error) {
     console.error(error);

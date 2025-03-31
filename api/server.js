@@ -4,13 +4,12 @@ const { Sequelize } = require("sequelize");
 const authRoutes = require("./routes/authRoutes");
 const createUserRoutes = require("./routes/createUserRoutes");
 const menuRoute = require("./routes/menuRoute");
-require("dotenv").config({ path: '.env' });
-const userStatusRoute = require('./routes/userStatusRoutes'); 
-
-
+const updatePasswordRoutes = require('./routes/updatePasswordRoutes');
+const listeUtilisateurRoutes = require('./routes/listeUtilisateurRoutes'); 
 const port = process.env.PORT || 5000;
 const app = express();
 
+require("dotenv").config({ path: '.env' });
 app.use(express.json());
 app.use(cors());
 
@@ -33,7 +32,9 @@ sequelize.authenticate()
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", createUserRoutes);
 app.use('/api', menuRoute); 
-app.use('/api/user-status', userStatusRoute); 
+app.use('/api/updatePassword', updatePasswordRoutes); 
+app.use('/api', listeUtilisateurRoutes);
+
 
 app.listen(port, () => console.log(`🚀 Serveur démarré sur le port ${port}`));
 

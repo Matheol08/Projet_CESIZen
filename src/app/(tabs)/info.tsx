@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, TextInput, Button, ToastAndroid } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwt_decode from 'jwt-decode'; // Ajouté pour décoder le token
+import { DevSettings } from 'react-native';
+
+const handleRefresh = () => {
+  DevSettings.reload();
+};
 
 interface DecodedToken {
   isAdmin: boolean;
-  // Ajoutez d'autres propriétés qui existent dans votre JWT si nécessaire
 }
 
 interface Menu {
@@ -27,7 +30,6 @@ function Info() {
     try {
       const token = await AsyncStorage.getItem('authToken');
       if (token) {
-        // Séparer les parties du JWT (header, payload, signature)
         const base64Url = token.split('.')[1]; 
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const jsonPayload = decodeURIComponent(
@@ -56,7 +58,7 @@ function Info() {
   const fetchMenus = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.216.1:5000/api/menu');
+      const response = await fetch('http://192.168.1.20:5000/api/menu');
       const data = await response.json();
       setMenus(data);
     } catch (error) {
@@ -81,13 +83,14 @@ function Info() {
   const handleSave = async () => {
     if (editedMenu) {
       try {
-        const response = await fetch(`http://192.168.216.1:5000/api/menu/${editedMenu.id}`, {
+        const response = await fetch(`http://192.168.1.20:5000/api/menu/${editedMenu.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(editedMenu),
         });
+        
 
         if (response.ok) {
           fetchMenus();  
@@ -109,6 +112,7 @@ function Info() {
   };
 
   return (
+    
     <View style={styles.container}>
       <ScrollView style={styles.scrollContainer}>
         {isAdmin && (
@@ -120,6 +124,7 @@ function Info() {
           <Ionicons name="information-circle-outline" size={30} color="blue" />
           Menu
         </Text>
+        <Button title="Rafraîchir" onPress={handleRefresh} color="blue" />
         {loading ? (
           <ActivityIndicator size="large" color="blue" />
         ) : (
@@ -138,20 +143,13 @@ function Info() {
                     onChangeText={(text) => handleInputChange('contenu', text)}
                     multiline
                   />
-                  <View style={styles.buttonContainer}>
-                    <Button title="Enregistrer" onPress={handleSave} />
-                    <Button title="Annuler" onPress={handleCancel} color="red" />
-                  </View>
+                
                 </View>
               ) : (
                 <View>
                   <Text style={styles.menuTitle}>{menu.titre}</Text>
                   <Text style={styles.menuContent}>{menu.contenu}</Text>
-                  {isAdmin && (  // Affichage du bouton Modifier uniquement si l'utilisateur est admin
-                    <TouchableOpacity onPress={() => handleEdit(menu)}>
-                      <Text style={styles.editButton}>Modifier</Text>
-                    </TouchableOpacity>
-                  )}
+              
                 </View>
               )}
             </View>

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { resetPassword } = require('../controllers/updatePasswordController'); // Assure-toi que le chemin est correct
+const resetPasswordController = require('../controllers/updatePasswordController');
 
-// Route pour réinitialiser le mot de passe
-router.post('/', resetPassword); // resetPassword est la fonction que tu as définie dans le contrôleur
+
+router.post('/resetPassword/:userId', resetPasswordController.resetPassword);
 
 module.exports = router;

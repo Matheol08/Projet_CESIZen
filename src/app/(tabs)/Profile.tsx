@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 function Profil() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState(''); 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -50,7 +51,7 @@ function Profil() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.216.1:5000/api/auth/createUser', {
+      const response = await fetch('http://192.168.1.20:5000/api/auth/createUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prenom: firstName, nom: lastName, password }),
@@ -61,7 +62,7 @@ function Profil() {
 
       if (response.ok) {
         alert('Compte créé avec succès');
-        setIsCreatingAccount(false); // Change l'état pour revenir à la connexion
+        setIsCreatingAccount(false);
       } else {
         alert(data.message || 'Erreur lors de la création du compte');
       }
@@ -78,32 +79,35 @@ function Profil() {
       alert("Veuillez remplir tous les champs.");
       return;
     }
-
+  
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.216.1:5000/api/auth/login', {
+      const response = await fetch('http://192.168.1.20:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prenom: firstName, nom: lastName, password }),
       });
-
+  
       const data = await response.json();
       console.log('Réponse de l\'API:', data);
-
+  
       if (response.ok && data.token) {
         const decodedToken = decodeJWT(data.token);
         const userRoleId = decodedToken.id_role;
-
+  
+        console.log('ID de l\'utilisateur depuis le token:', decodedToken.id); 
+  
         await AsyncStorage.setItem('userToken', data.token);
         await AsyncStorage.setItem('firstName', firstName);
         await AsyncStorage.setItem('lastName', lastName);
         await AsyncStorage.setItem('id_role', userRoleId.toString());
-
+        await AsyncStorage.setItem('userId', decodedToken.id.toString());  
+  
         setIsLoggedIn(true);
         setFirstName(firstName);
         setLastName(lastName);
         setRoleId(userRoleId.toString());
-
+  
         alert('Connexion réussie');
       } else {
         alert(data.message || 'Identifiants incorrects');
@@ -115,6 +119,55 @@ function Profil() {
       setLoading(false);
     }
   };
+  
+  
+
+  const handleResetPassword = async () => {
+    if (!newPassword) {
+      alert("Veuillez entrer un nouveau mot de passe.");
+      return;
+    }
+  
+    setLoading(true);
+  
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      console.log('userId récupéré depuis AsyncStorage:', userId);
+  
+      if (!userId) {
+        alert("L'ID utilisateur est manquant. Veuillez vous reconnecter.");
+        return;
+      }
+  
+      const response = await fetch(`http://192.168.1.20:5000/api/updatePassword/resetPassword/${userId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newPassword }), 
+      });
+  
+      const data = await response.text();
+      console.log('Réponse brute:', data);
+  
+      try {
+        const jsonData = JSON.parse(data);
+        console.log('Réponse JSON:', jsonData);
+        if (response.ok) {
+          alert('Mot de passe réinitialisé avec succès');
+        } else {
+          alert(jsonData.message || 'Erreur lors de la réinitialisation du mot de passe');
+        }
+      } catch (error) {
+        console.error('Erreur de JSON:', error);
+        alert('Réponse de l\'API non valide');
+      }
+  
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   const handleLogout = async () => {
     try {
@@ -151,6 +204,18 @@ function Profil() {
               <TouchableOpacity onPress={handleLogout} style={styles.button}>
                 <Text style={styles.buttonText}>Se déconnecter</Text>
               </TouchableOpacity>
+
+             
+              <TextInput
+                style={styles.input}
+                placeholder="Nouveau mot de passe"
+                secureTextEntry
+                value={newPassword}
+                onChangeText={setNewPassword}
+              />
+              <TouchableOpacity onPress={handleResetPassword} style={styles.button} disabled={loading}>
+                {loading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Réinitialiser le mot de passe</Text>}
+              </TouchableOpacity>
             </View>
           ) : (
             <View>
@@ -170,7 +235,7 @@ function Profil() {
       )}
     </View>
   );
-} 
+}
 
 const styles = StyleSheet.create({
   container: {

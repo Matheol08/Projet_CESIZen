@@ -1,9 +1,9 @@
-const User = require('../models/utilisateur'); // Import du modèle Sequelize
+const User = require('../models/utilisateur');
 
-// Fonction pour récupérer la liste des utilisateurs
+
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.findAll(); // Utilise `findAll()` pour MySQL/Sequelize
+    const users = await User.findAll(); 
     res.status(200).json(users);
   } catch (error) {
     console.error(error);

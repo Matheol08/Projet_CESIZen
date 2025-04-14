@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, TextInput, Button, Alert,ScrollView  } from 'react-native'; 
 import { Picker } from '@react-native-picker/picker';
 
@@ -30,8 +31,21 @@ const Admin = () => {
 
   const handleDeleteUser = async (id: number) => {
     try {
+     
+      const token = await AsyncStorage.getItem('userToken');
+      
+      if (!token) {
+        alert('Token manquant, veuillez vous reconnecter.');
+        return;
+      }
+  
+     
       const response = await fetch(`http://192.168.1.20:5000/api/deleteUser/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, 
+        },
       });
   
       if (!response.ok) throw new Error('Erreur lors de la suppression');
@@ -44,37 +58,48 @@ const Admin = () => {
       alert('Erreur lors de la suppression de l\'utilisateur.');
     }
   };
+  
 
   const handleUpdateMenu = async () => {
     if (!editingMenu) return;
-
+  
     try {
+     
+      const token = await AsyncStorage.getItem('userToken');
+      
+      if (!token) {
+        alert('Token manquant, veuillez vous reconnecter.');
+        return;
+      }
+  
       const response = await fetch(`http://192.168.1.20:5000/api/updateMenu/${editingMenu.id_menu}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, 
         },
         body: JSON.stringify({
           titre: newTitle,
           contenu: newContent,
         }),
       });
-
+  
       if (!response.ok) throw new Error('Erreur lors de la mise à jour du menu');
-
+  
       const data = await response.json();
       setMenus(menus.map(menu => (menu.id_menu === editingMenu.id_menu ? data.menu : menu)));
-
+  
       setEditingMenu(null);
       setNewTitle('');
       setNewContent('');
-
+  
       Alert.alert('Menu mis à jour', 'Le menu a été mis à jour avec succès');
     } catch (error) {
       console.error('Erreur mise à jour menu:', error);
       Alert.alert('Erreur', 'Une erreur est survenue lors de la mise à jour du menu');
     }
   };
+  
 
   const handleCreateUser = async () => {
     if (!newNom || !newPrenom || !newPassword || !newRole) {
@@ -83,22 +108,18 @@ const Admin = () => {
     }
   
     try {
-      console.log({
-        nom: newNom,
-        prenom: newPrenom,
-        password: newPassword,
-        role: newRole
-      });
+      const token = await AsyncStorage.getItem('userToken');
   
       const response = await fetch('http://192.168.1.20:5000/api/createUtilisateur', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           nom: newNom,
           prenom: newPrenom,
-          password: newPassword,  
+          password: newPassword,
           role: newRole,
         }),
       });
@@ -106,18 +127,16 @@ const Admin = () => {
       console.log('STATUS:', response.status);
   
       const data = await response.json();
-      console.log('REPONSE JSON:', data); 
+      console.log('REPONSE JSON:', data);
   
       if (!response.ok) throw new Error('Erreur lors de la création de l\'utilisateur page admin');
-  
-     
+
       setUsers([...users, data.utilisateur]);
   
-     
       setNewNom('');
       setNewPrenom('');
       setNewPassword('');
-      setNewRole('utilisateur'); 
+      setNewRole('utilisateur');
   
       Alert.alert('Utilisateur créé', 'L\'utilisateur a été créé avec succès');
     } catch (error) {
@@ -125,6 +144,7 @@ const Admin = () => {
       Alert.alert('Erreur', 'Une erreur est survenue lors de la création de l\'utilisateur');
     }
   };
+  
   
   
 

@@ -101,7 +101,7 @@ function Profil() {
         await AsyncStorage.setItem('firstName', firstName);
         await AsyncStorage.setItem('lastName', lastName);
         await AsyncStorage.setItem('id_role', userRoleId.toString());
-        await AsyncStorage.setItem('userId', decodedToken.id.toString());  
+        await AsyncStorage.setItem('userId', decodedToken.id.toString());
   
         setIsLoggedIn(true);
         setFirstName(firstName);
@@ -120,7 +120,7 @@ function Profil() {
     }
   };
   
-  
+
 
   const handleResetPassword = async () => {
     if (!newPassword) {
@@ -139,12 +139,20 @@ function Profil() {
         return;
       }
   
+      const token = await AsyncStorage.getItem('userToken');
+      
+      if (!token) {
+        alert("Token manquant, veuillez vous reconnecter.");
+        return;
+      }
+  
       const response = await fetch(`http://192.168.1.20:5000/api/updatePassword/resetPassword/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, 
         },
-        body: JSON.stringify({ newPassword }), 
+        body: JSON.stringify({ newPassword }),
       });
   
       const data = await response.text();

@@ -17,7 +17,7 @@ function Layout() {
 
   useEffect(() => {
     const checkRole = async () => {
-      const storedRoleId = await AsyncStorage.getItem('id_role'); 
+      const storedRoleId = await AsyncStorage.getItem('id_role');  
       if (storedRoleId) {
         setRoleId(Number(storedRoleId));
         setIsConnected(true); 
@@ -25,13 +25,7 @@ function Layout() {
       setIsLoading(false);
     };
     checkRole();
-  }, []);
-
- 
-  useEffect(() => { 
-    if (isConnected) {
-    }
-  }, [isConnected]); 
+  }, []); 
 
   if (isLoading) return null; 
 
@@ -56,12 +50,11 @@ function Layout() {
         },
         tabBarActiveTintColor: 'black',
         tabBarInactiveTintColor: 'gray',
-      })}
-    >
+      })}>
       <Tab.Screen name="Info" component={Info} options={{ tabBarLabel: 'Info' }} />
       <Tab.Screen name="Exercices" component={Exercice} options={{ tabBarLabel: 'Exercice' }} />
       <Tab.Screen name="Profile" component={Profile} options={{ tabBarLabel: 'Profil' }} />
-
+      
       {roleId === 1 && (
         <Tab.Screen name="Admin" component={Admin} options={{ tabBarLabel: 'Admin' }} />
       )}

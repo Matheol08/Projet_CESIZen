@@ -1,6 +1,6 @@
 const utilisateur = require('../models/utilisateur');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken'); 
+const jwt = require('jsonwebtoken');
 
 exports.resetPassword = async (req, res) => {
   const { newPassword } = req.body;
@@ -15,16 +15,16 @@ exports.resetPassword = async (req, res) => {
   }
 
   try {
-    const token = req.headers.authorization?.split(' ')[1]; 
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
       return res.status(401).json({ message: 'Token manquant, accès non autorisé' });
     }
 
-  
-    const decodedToken = jwt.verify(token, 'ton_secret_key'); 
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const userIdFromToken = decodedToken.id;
 
-    if (userId !== userIdFromToken) {
+    if (parseInt(userId) !== userIdFromToken) {
       return res.status(403).json({ message: 'Accès interdit, vous ne pouvez réinitialiser le mot de passe que pour votre propre compte' });
     }
 
@@ -33,7 +33,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(404).json({ message: "Utilisateur non trouvé." });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10); 
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
 

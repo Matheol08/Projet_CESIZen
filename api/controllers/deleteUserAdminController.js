@@ -13,7 +13,8 @@ const deleteUserAdminController = async (req, res) => {
     }
 
   
-    const decodedToken = jwt.verify(token, 'ton_secret_key'); 
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);  
+
     const userIdFromToken = decodedToken.id;
 
     const user = await User.findByPk(userIdFromToken);

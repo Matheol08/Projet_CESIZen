@@ -16,11 +16,11 @@ function Layout() {
   const [isConnected, setIsConnected] = useState(false); 
 
   useEffect(() => {
-    const checkRole = async () => {
+    const checkRole = async () => { 
       const storedRoleId = await AsyncStorage.getItem('id_role');  
       if (storedRoleId) {
         setRoleId(Number(storedRoleId));
-        setIsConnected(true); 
+        setIsConnected(true);  
       }
       setIsLoading(false);
     };

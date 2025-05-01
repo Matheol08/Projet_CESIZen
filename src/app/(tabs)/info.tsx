@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, TextInput, Button, ToastAndroid } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, TextInput, ToastAndroid } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DevSettings } from 'react-native';
@@ -26,34 +26,33 @@ function Info() {
   const [editedMenu, setEditedMenu] = useState<Menu | null>(null);
 
   useEffect(() => {
-  const checkUserStatus = async () => {
-    try {
-      const token = await AsyncStorage.getItem('authToken');
-      if (token) {
-        const base64Url = token.split('.')[1]; 
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-          atob(base64)
-            .split('')
-            .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-            .join('')
-        );
+    const checkUserStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('authToken');
+        if (token) {
+          const base64Url = token.split('.')[1]; 
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split('')
+              .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
+              .join('')
+          );
 
-        const decoded = JSON.parse(jsonPayload); 
+          const decoded = JSON.parse(jsonPayload); 
 
-        if (decoded.id_role === 1) {
-          setIsAdmin(true);
+          if (decoded.id_role === 1) {
+            setIsAdmin(true);
+          }
         }
+      } catch (error) {
+        console.log("Erreur lors de la vérification du token", error);
       }
-    } catch (error) {
-      console.log("Erreur lors de la vérification du token", error);
-    }
-  };
+    };
 
-  checkUserStatus();
-  fetchMenus();
-}, []);
-
+    checkUserStatus();
+    fetchMenus();
+  }, []);
 
   const fetchMenus = async () => {
     setLoading(true);
@@ -90,7 +89,6 @@ function Info() {
           },
           body: JSON.stringify(editedMenu),
         });
-        
 
         if (response.ok) {
           fetchMenus();  
@@ -112,7 +110,6 @@ function Info() {
   };
 
   return (
-    
     <View style={styles.container}>
       <ScrollView style={styles.scrollContainer}>
         {isAdmin && (
@@ -124,7 +121,12 @@ function Info() {
           <Ionicons name="information-circle-outline" size={30} color="blue" />
           Menu
         </Text>
-        <Button title="Rafraîchir" onPress={handleRefresh} color="blue" />
+
+        {/* Nouveau bouton personnalisé "Rafraîchir" */}
+        <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
+          <Text style={styles.refreshButtonText}>Rafraîchir</Text>
+        </TouchableOpacity>
+
         {loading ? (
           <ActivityIndicator size="large" color="blue" />
         ) : (
@@ -143,13 +145,11 @@ function Info() {
                     onChangeText={(text) => handleInputChange('contenu', text)}
                     multiline
                   />
-                
                 </View>
               ) : (
                 <View>
                   <Text style={styles.menuTitle}>{menu.titre}</Text>
                   <Text style={styles.menuContent}>{menu.contenu}</Text>
-              
                 </View>
               )}
             </View>
@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: 'bleu',
   },
   scrollContainer: {
     width: '100%',
@@ -217,14 +218,17 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
     borderRadius: 5,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
+  refreshButton: {
+    backgroundColor: 'blue', 
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 20,
+    width: '100%',
+    alignItems: 'center',
   },
-  editButton: {
-    color: 'blue',
-    marginTop: 10,
+  refreshButtonText: {
+    color: 'white', 
+    fontSize: 16,
   },
 });
 

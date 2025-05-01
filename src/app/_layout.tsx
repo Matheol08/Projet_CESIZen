@@ -12,15 +12,15 @@ const Tab = createBottomTabNavigator();
 
 function Layout() {
   const [roleId, setRoleId] = useState<number | null>(null); 
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);  
   const [isConnected, setIsConnected] = useState(false); 
 
   useEffect(() => {
     const checkRole = async () => { 
       const storedRoleId = await AsyncStorage.getItem('id_role');  
       if (storedRoleId) {
-        setRoleId(Number(storedRoleId));
-        setIsConnected(true);  
+        setRoleId(Number(storedRoleId)); 
+        setIsConnected(true);    
       }
       setIsLoading(false);
     };
@@ -35,7 +35,7 @@ function Layout() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           if (route.name === 'Info') {
-            iconName = focused ? 'information-circle' : 'information-circle-outline';
+            iconName = focused ? 'information-circle' : 'information-circle-outline'; 
             return <Ionicons name={iconName} size={size} color={color} />;
           } else if (route.name === 'Exercices') {
             iconName = 'self-improvement';

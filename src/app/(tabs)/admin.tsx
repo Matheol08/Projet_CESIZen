@@ -273,7 +273,6 @@ const Admin = () => {
         />
       )}
 
-      {/* Formulaire de modification du menu */}
       {editingMenu && (
         <View style={styles.formContainer}>
           <Text style={styles.subtitle}>Modifier le menu</Text>
@@ -295,35 +294,41 @@ const Admin = () => {
     </View>
     </ScrollView>
   );
-};
-
-const styles = StyleSheet.create({
+};const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#f2f4f7',
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 20,
     textAlign: 'center',
+    color: '#1a1a1a',
   },
+  editButton: {
+    backgroundColor: '#3498db', 
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },  
   subtitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 20,
+    fontSize: 20,
+    fontWeight: '600',
+    marginTop: 25,
     marginBottom: 10,
+    color: '#333',
   },
   card: {
-    backgroundColor: 'white',
-    padding: 15,
-    marginVertical: 5,
-    borderRadius: 8,
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    marginVertical: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
     elevation: 2,
   },
   row: {
@@ -331,52 +336,63 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 10,
+    backgroundColor: '#fff',
+  },
   label: {
     fontSize: 14,
     color: '#555',
+    marginBottom: 4,
   },
   bold: {
-    fontWeight: 'bold',
-  },
-  menuTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#007bff',
-    marginBottom: 5,
-  },
-  menuContent: {
-    fontSize: 14,
-    color: '#555',
+    fontWeight: '600',
   },
   deleteButton: {
-    backgroundColor: '#dc3545',
-    padding: 8,
-    borderRadius: 5,
+    backgroundColor: '#e74c3c', 
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
   },
-  editButton: {
-    backgroundColor: '#007bff',
-    padding: 8,
-    borderRadius: 5,
+  createButton: {
+    backgroundColor: '#003366', 
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
   },
   buttonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: 14,
   },
   formContainer: {
-    marginTop: 5,
-    padding: 15,
+    marginTop: 10,
     backgroundColor: '#fff',
-    borderRadius: 8,
-    elevation: 2,
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 1,
+    color: 'purple'
   },
-  input: {
-    height: 50,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingHorizontal: 10,
+  menuTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2c3e50',
+  },
+  menuContent: {
+    fontSize: 14,
+    color: '#7f8c8d',
+    marginTop: 4,
   },
 });
+
+
 
 export default Admin;

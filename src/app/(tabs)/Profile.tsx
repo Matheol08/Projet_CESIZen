@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   roleText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'purple',
+    color: 'bleufoncé',
     marginBottom: 20,
   },
   title: {

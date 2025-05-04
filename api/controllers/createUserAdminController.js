@@ -15,7 +15,7 @@ exports.createUtilisateur = async (req, res) => {
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET); 
-    req.user = decodedToken;r
+    req.user = decodedToken;
   } catch (error) {
     return res.status(401).json({ message: 'Token invalide' });
   }

@@ -57,7 +57,7 @@ function Info() {
   const fetchMenus = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.1.20:5000/api/menu');
+      const response = await fetch('http://192.168.216.1:5000/api/menu');
       const data = await response.json();
       setMenus(data);
     } catch (error) {
@@ -82,7 +82,7 @@ function Info() {
   const handleSave = async () => {
     if (editedMenu) {
       try {
-        const response = await fetch(`http://192.168.1.20:5000/api/menu/${editedMenu.id}`, {
+        const response = await fetch(`http://192.168.216.1:5000/api/menu/${editedMenu.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -122,7 +122,6 @@ function Info() {
           Menu
         </Text>
 
-        {/* Nouveau bouton personnalisé "Rafraîchir" */}
         <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
           <Text style={styles.refreshButtonText}>Rafraîchir</Text>
         </TouchableOpacity>

@@ -8,20 +8,20 @@ import Exercice from './(tabs)/exercice';
 import Admin from './(tabs)/admin';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
-const Tab = createBottomTabNavigator();
-
+const Tab = createBottomTabNavigator(); 
+ 
 function Layout() {
-  const [roleId, setRoleId] = useState<number | null>(null); 
+  const [roleId, setRoleId] = useState<number | null>(null);  
   const [isLoading, setIsLoading] = useState(true);  
   const [isConnected, setIsConnected] = useState(false); 
 
   useEffect(() => { 
     const checkRole = async () => { 
-      const storedRoleId = await AsyncStorage.getItem('id_role');  
-      if (storedRoleId) {
-        setRoleId(Number(storedRoleId)); 
+      const storedRoleId = await AsyncStorage.getItem('id_role');    
+      if (storedRoleId) {  
+        setRoleId(Number(storedRoleId));  
         setIsConnected(true);    
-      }
+      } 
       setIsLoading(false);
     };
     checkRole();

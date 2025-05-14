@@ -2,34 +2,35 @@ const bcrypt = require('bcrypt');
 const utilisateur = require('../models/utilisateur');
 
 exports.createUser = async (req, res) => {
-  const { prenom, nom, password, id_role } = req.body;
+  const { prenom, nom, email, mot_de_passe, id_role } = req.body;
 
-  const userRole = id_role || 2; 
+  const userRole = id_role || 2;
 
   console.log(req.body);
 
-  if (!prenom || !nom || !password) {
-    return res.status(400).json({ message: 'Tous les champs sont requis' });
+  if (!prenom || !nom || !email || !mot_de_passe) {
+    return res.status(400).json({ message: 'Tous les champs sont requiis (prénom, nom, email, mot de passe)' });
   }
 
   try {
+    // Vérifie si un utilisateur avec le même email existe déjà
     const existingUser = await utilisateur.findOne({
-      where: {
-        prenom: prenom,
-        nom: nom
-      }
+      where: { email }
     });
 
     if (existingUser) {
-      return res.status(400).json({ message: 'Un utilisateur avec ce prénom ou ce nom existe déjà' });
+      return res.status(400).json({ message: 'Un utilisateur avec cet email existe déjà' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hachage du mot de passe
+    const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
 
+    // Création de l'utilisateur
     const user = await utilisateur.create({
       prenom,
       nom,
-      password: hashedPassword, 
+      email,
+      mot_de_passe: hashedPassword,
       id_role: userRole
     });
 

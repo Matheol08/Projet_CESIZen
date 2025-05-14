@@ -15,12 +15,16 @@ const utilisateur = sequelize.define('utilisateur', {
     type: DataTypes.STRING,
     allowNull: false 
   },
-  password: {
+   mot_de_passe: {
     type: DataTypes.STRING,
     allowNull: false
   },
   id_role: {
     type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  email: {
+    type: DataTypes.STRING,
     allowNull: false
   }
 }, {
@@ -28,7 +32,6 @@ const utilisateur = sequelize.define('utilisateur', {
   timestamps: false
 });
 
-// Synchronisation du modèle avec la base de données
 sequelize.sync()
   .then(() => {
     console.log('Table utilisateur synchronisée');

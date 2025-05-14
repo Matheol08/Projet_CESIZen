@@ -29,6 +29,7 @@ const Admin = () => {
   const [newNom, setNewNom] = useState('');
   const [newPrenom, setNewPrenom] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [newEmail, setNewEmail] = useState('');
   const [newRole, setNewRole] = useState('utilisateur');
 
   const handleDeleteUser = async (id: number) => {
@@ -95,8 +96,22 @@ const Admin = () => {
   };
 
   const handleCreateUser = async () => {
-    if (!newNom || !newPrenom || !newPassword || !newRole) {
+    if (!newNom || !newPrenom || !newPassword || !newEmail || !newRole) {
       alert('Veuillez remplir tous les champs');
+      return;
+    }
+    if (newPassword.length < 6) {
+    alert('Le mot de passe doit contenir au moins 6 caractères');
+    return;
+    }
+
+    if (newEmail.length < 6) {
+      alert('L\'email doit contenir au moins 6 caractères');
+      return;
+    }
+
+    if (!newEmail.includes('@')) {
+      alert('L\'email doit contenir un caractère "@"');
       return;
     }
 
@@ -111,7 +126,8 @@ const Admin = () => {
         body: JSON.stringify({
           nom: newNom,
           prenom: newPrenom,
-          password: newPassword,
+          mot_de_passe: newPassword,
+          email: newEmail,
           role: newRole,
         }),
       });
@@ -123,6 +139,7 @@ const Admin = () => {
       setNewNom('');
       setNewPrenom('');
       setNewPassword('');
+      setNewEmail('');
       setNewRole('utilisateur');
 
       Alert.alert('Utilisateur créé', 'L\'utilisateur a été créé avec succès');
@@ -172,6 +189,7 @@ const Admin = () => {
         <Text style={styles.subtitle}>Créer un utilisateur</Text>
         <TextInput style={styles.input} value={newNom} onChangeText={setNewNom} placeholder="Nom" />
         <TextInput style={styles.input} value={newPrenom} onChangeText={setNewPrenom} placeholder="Prénom" />
+        <TextInput style={styles.input} value={newEmail} onChangeText={setNewEmail} placeholder="Email" />
         <TextInput style={styles.input} value={newPassword} onChangeText={setNewPassword} placeholder="Mot de passe" secureTextEntry />
         <Text style={styles.label}>Rôle</Text>
         <Picker selectedValue={newRole} onValueChange={(itemValue) => setNewRole(itemValue)} style={styles.input}>

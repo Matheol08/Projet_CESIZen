@@ -3,18 +3,19 @@ const jwt = require('jsonwebtoken');
 const utilisateur = require('../models/utilisateur');
 
 exports.login = async (req, res) => {
-  const { prenom, nom, password } = req.body;
+  const { email, mot_de_passe } = req.body;
 
   try {
     const user = await utilisateur.findOne({
-      where: { prenom, nom }
+      where: { email }
+      
     });
 
     if (!user) {
-      return res.status(401).json({ message: "Nom ou prénom incorrect" });
+      return res.status(401).json({ message: "Email incorrect" });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(mot_de_passe, user.mot_de_passe);
 
     if (!passwordMatch) {
       return res.status(401).json({ message: "Mot de passe incorrect" });
@@ -22,15 +23,17 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign(
       {
-        id: user.id_utilisateur,       
-        prenom: user.prenom,           
-        nom: user.nom,                 
-        id_role: user.id_role,         
+        id: user.id_utilisateur,
+        prenom: user.prenom,
+        nom: user.nom,
+        id_role: user.id_role,
+        email: user.email
       },
-      process.env.JWT_SECRET,          
-      { expiresIn: "1h" }             
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
     );
 
+    // Réponse avec le token
     res.json({ message: "Connexion réussie", token });
 
   } catch (error) {

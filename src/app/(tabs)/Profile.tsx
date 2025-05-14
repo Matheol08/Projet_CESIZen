@@ -5,8 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Profil() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [password, setPassword] = useState('');
-  const [newPassword, setNewPassword] = useState(''); 
+  const [email, setEmail] = useState('');
+  const [mot_de_passe, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,12 +21,14 @@ function Profil() {
         const token = await AsyncStorage.getItem('userToken');
         const storedFirstName = await AsyncStorage.getItem('firstName');
         const storedLastName = await AsyncStorage.getItem('lastName');
+        const storedEmail = await AsyncStorage.getItem('email');
         const storedRoleId = await AsyncStorage.getItem('id_role');
 
         if (token) {
           setIsLoggedIn(true);
           setFirstName(storedFirstName || '');
           setLastName(storedLastName || '');
+          setEmail(storedEmail || '');
           setRoleId(storedRoleId || null);
         }
       } catch (error) {
@@ -44,7 +47,7 @@ function Profil() {
   };
 
   const handleCreateAccount = async () => {
-    if (!firstName || !lastName || !password) {
+    if (!firstName || !lastName || !email || !mot_de_passe) {
       alert("Veuillez remplir tous les champs.");
       return;
     }
@@ -54,7 +57,7 @@ function Profil() {
       const response = await fetch('http://192.168.216.1:5000/api/auth/createUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom: firstName, nom: lastName, password }),
+        body: JSON.stringify({ prenom: firstName, nom: lastName, email, mot_de_passe }),
       });
 
       const data = await response.json();
@@ -75,39 +78,41 @@ function Profil() {
   };
 
   const handleLogin = async () => {
-    if (!firstName || !lastName || !password) {
+    if (!email || !mot_de_passe) {
       alert("Veuillez remplir tous les champs.");
       return;
     }
-  
+
     setLoading(true);
     try {
       const response = await fetch('http://192.168.216.1:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom: firstName, nom: lastName, password }),
+        body: JSON.stringify({ email, mot_de_passe }),
       });
-  
+
       const data = await response.json();
       console.log('Réponse de l\'API:', data);
-  
+
+      
+
       if (response.ok && data.token) {
         const decodedToken = decodeJWT(data.token);
         const userRoleId = decodedToken.id_role;
-  
-        console.log('ID de l\'utilisateur depuis le token:', decodedToken.id); 
-  
+
         await AsyncStorage.setItem('userToken', data.token);
-        await AsyncStorage.setItem('firstName', firstName);
-        await AsyncStorage.setItem('lastName', lastName);
+        await AsyncStorage.setItem('firstName', decodedToken.prenom);
+        await AsyncStorage.setItem('lastName', decodedToken.nom);
+        await AsyncStorage.setItem('email', decodedToken.email);
         await AsyncStorage.setItem('id_role', userRoleId.toString());
         await AsyncStorage.setItem('userId', decodedToken.id.toString());
-  
+
         setIsLoggedIn(true);
-        setFirstName(firstName);
-        setLastName(lastName);
+        setFirstName(decodedToken.prenom);
+        setLastName(decodedToken.nom);
+        setEmail(decodedToken.email);
         setRoleId(userRoleId.toString());
-  
+
         alert('Connexion réussie');
       } else {
         alert(data.message || 'Identifiants incorrects');
@@ -119,70 +124,57 @@ function Profil() {
       setLoading(false);
     }
   };
-  
-
 
   const handleResetPassword = async () => {
     if (!newPassword) {
       alert("Veuillez entrer un nouveau mot de passe.");
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       const userId = await AsyncStorage.getItem('userId');
-      console.log('userId récupéré depuis AsyncStorage:', userId);
-  
-      if (!userId) {
-        alert("L'ID utilisateur est manquant. Veuillez vous reconnecter.");
-        return;
-      }
-  
       const token = await AsyncStorage.getItem('userToken');
-      
-      if (!token) {
-        alert("Token manquant, veuillez vous reconnecter.");
+
+      if (!userId || !token) {
+        alert("Veuillez vous reconnecter.");
         return;
       }
-  
+
       const response = await fetch(`http://192.168.216.1:5000/api/updatePassword/resetPassword/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, 
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ newPassword }),
       });
-  
+
       const data = await response.text();
-      console.log('Réponse brute:', data);
-  
       try {
         const jsonData = JSON.parse(data);
-        console.log('Réponse JSON:', jsonData);
         if (response.ok) {
           alert('Mot de passe réinitialisé avec succès');
+           setNewPassword('');
         } else {
           alert(jsonData.message || 'Erreur lors de la réinitialisation du mot de passe');
         }
       } catch (error) {
-        console.error('Erreur de JSON:', error);
         alert('Réponse de l\'API non valide');
       }
-  
     } finally {
       setLoading(false);
     }
   };
-  
 
   const handleLogout = async () => {
     try {
-      await AsyncStorage.multiRemove(['userToken', 'firstName', 'lastName', 'id_role']);
+      await AsyncStorage.multiRemove(['userToken', 'firstName', 'lastName', 'email', 'id_role']);
       setIsLoggedIn(false);
       setFirstName('');
       setLastName('');
+      setEmail('');
       setPassword('');
       setRoleId(null);
       alert('Vous êtes déconnecté');
@@ -197,7 +189,7 @@ function Profil() {
   return (
     <View style={styles.container}>
       <Ionicons name="person-circle-outline" size={80} color="purple" />
-      
+
       {isLoadingData ? (
         <ActivityIndicator size="large" color="purple" />
       ) : (
@@ -209,11 +201,11 @@ function Profil() {
               <Text style={styles.title}>Mon Profil</Text>
               <Text style={styles.text}>Nom : {lastName}</Text>
               <Text style={styles.text}>Prénom : {firstName}</Text>
+              <Text style={styles.text}>Email : {email}</Text>
               <TouchableOpacity onPress={handleLogout} style={styles.button}>
                 <Text style={styles.buttonText}>Se déconnecter</Text>
               </TouchableOpacity>
 
-             
               <TextInput
                 style={styles.input}
                 placeholder="Nouveau mot de passe"
@@ -228,9 +220,14 @@ function Profil() {
           ) : (
             <View>
               <Text style={styles.title}>{isCreatingAccount ? "Créer un Compte" : "Connexion"}</Text>
-              <TextInput style={styles.input} placeholder="Votre prénom" value={firstName} onChangeText={setFirstName} />
-              <TextInput style={styles.input} placeholder="Votre nom" value={lastName} onChangeText={setLastName} />
-              <TextInput style={styles.input} placeholder="Mot de passe" secureTextEntry value={password} onChangeText={setPassword} />
+              {isCreatingAccount && (
+                <>
+                  <TextInput style={styles.input} placeholder="Votre prénom" value={firstName} onChangeText={setFirstName} />
+                  <TextInput style={styles.input} placeholder="Votre nom" value={lastName} onChangeText={setLastName} />
+                </>
+              )}
+              <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} />
+              <TextInput style={styles.input} placeholder="Mot de passe" secureTextEntry value={mot_de_passe} onChangeText={setPassword} />
               <TouchableOpacity onPress={isCreatingAccount ? handleCreateAccount : handleLogin} style={styles.button} disabled={loading}>
                 {loading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>{isCreatingAccount ? "Créer un compte" : "Se connecter"}</Text>}
               </TouchableOpacity>
@@ -255,7 +252,7 @@ const styles = StyleSheet.create({
   roleText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'bleufoncé',
+    color: 'purple',
     marginBottom: 20,
   },
   title: {
@@ -272,7 +269,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginTop: 10,
     borderRadius: 5,
-    width: 200,
+    width: 220,
     alignItems: 'center',
   },
   buttonText: {

@@ -10,7 +10,7 @@ const deleteUserAdminRoutes = require('./routes/deleteUserAdminRoutes');
 const menuRoutes = require('./routes/updateMenuRoutes');
 const createUserAdminRoutes = require('./routes/createUserAdminRoutes'); 
 const updatePasswordRoutes = require('./routes/updatePasswordRoutes');
-
+const exerciceRoutes = require('./routes/exerciceRoutes');
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -45,7 +45,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/deleteUser', deleteUserAdminRoutes); 
 app.use('/api', menuRoutes);
 app.use('/api', createUserAdminRoutes);
-
+app.use('/api/exercice', exerciceRoutes);
 
 app.listen(port, () => console.log(`🚀 Serveur démarré sur le port ${port}`));
 

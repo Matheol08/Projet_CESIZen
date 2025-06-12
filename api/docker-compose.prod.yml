@@ -1,0 +1,45 @@
+version: '3.9'
+services:
+  app:
+    build: .
+    container_name: cesizen-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+
+
+  mysql:
+    image: mysql:latest
+    environment:
+       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+       - MYSQL_USER=${DB_USER}
+       - MYSQL_PASSWORD=${DB_PASSWORD}
+       - MYSQL_DATABASE=${DB_NAME}
+  
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -29,11 +29,28 @@ const sequelize = new Sequelize({
   logging: false,
 });
 
-sequelize.authenticate()
-  .then(() => console.log("✅ Connexion MySQL réussie"))
-  .catch(err => {
-    console.error("❌ Erreur de connexion MySQL:", err);
-  });
+const connectWithRetry = async (retries = 10, delay = 3000) => {
+  while (retries > 0) {
+    try {
+      await sequelize.authenticate();
+      console.log("✅ Connexion MySQL réussie");
+
+      app.listen(port, () => {
+        console.log(`🚀 Serveur démarré sur le port ${port}`);
+      });
+
+      return;
+    } catch (err) {
+      console.error(`❌ Connexion MySQL échouée (${11 - retries}/10): ${err.message}`);
+      retries--;
+      if (retries === 0) {
+        console.error("💥 Échec de connexion après plusieurs tentatives. Arrêt du processus.");
+        process.exit(1);
+      }
+      await new Promise(res => setTimeout(res, delay));
+    }
+  }
+};
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -47,8 +64,6 @@ app.use('/api', menuRoutes);
 app.use('/api', createUserAdminRoutes);
 app.use('/api/exercice', exerciceRoutes);
 
-app.listen(port, () => console.log(`🚀 Serveur démarré sur le port ${port}`));
+connectWithRetry();
 
 module.exports = sequelize;
-
-

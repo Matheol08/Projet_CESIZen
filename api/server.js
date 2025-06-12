@@ -12,7 +12,7 @@ const createUserAdminRoutes = require('./routes/createUserAdminRoutes');
 const updatePasswordRoutes = require('./routes/updatePasswordRoutes');
 const exerciceRoutes = require('./routes/exerciceRoutes');
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 const app = express();
 
 require("dotenv").config({ path: '.env' });

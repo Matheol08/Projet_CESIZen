@@ -7,7 +7,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV: test 
+      - NODE_EN=test 
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
@@ -27,8 +27,6 @@ services:
     container_name: cesizen-db
     environment:
        - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-       - MYSQL_USER=${DB_USER}
-       - MYSQL_PASSWORD=${DB_PASSWORD}
        - MYSQL_DATABASE=${DB_NAME}
     ports:
       - "3306:3306"

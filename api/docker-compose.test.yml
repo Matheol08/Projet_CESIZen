@@ -52,7 +52,7 @@ services:
       - app-network
 
 volumes:
-  mysql_data:
+  mysql_data_test:
 
 networks:
   app-network:

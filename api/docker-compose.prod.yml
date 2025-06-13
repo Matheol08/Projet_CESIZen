@@ -25,20 +25,20 @@ services:
 
   mysql:
     image: mysql:latest
-    container_name: cesizen-db
+    container_name: cesizen-db-prod
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_DATABASE=${DB_NAME_prod}
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data_prod:/var/lib/mysql
     networks:
       - app-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: cesizen-phpmyadmin
+    container_name: cesizen-phpmyadmin-prod
     restart: always
     ports:
       - "8080:80"

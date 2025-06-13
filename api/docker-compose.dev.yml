@@ -5,7 +5,7 @@ services:
     build: .
     container_name: cesizen-app-dev
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - NODE_ENV=development
       - PORT=3000
@@ -25,23 +25,23 @@ services:
 
   mysql:
     image: mysql:latest
-    container_name: cesizen-db
+    container_name: cesizen-db-dev
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_DATABASE=${DB_NAME_dev}
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data_dev:/var/lib/mysql
     networks:
       - app-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: cesizen-phpmyadmin
+    container_name: cesizen-phpmyadmin-dev
     restart: always
     ports:
-      - "8080:80"
+      - "8081:80"
     environment:
       - PMA_HOST=mysql
       - PMA_PORT=3306

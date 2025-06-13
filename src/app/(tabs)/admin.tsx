@@ -40,7 +40,7 @@ const Admin = () => {
         return;
       }
 
-      const response = await fetch(`http://192.168.216.1:5000/api/deleteUser/${id}`, {
+      const response = await fetch(`http://34.239.25.180:3000/api/deleteUser/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ const Admin = () => {
         return;
       }
 
-      const response = await fetch(`http://192.168.216.1:5000/api/updateMenu/${editingMenu.id_menu}`, {
+      const response = await fetch(`http://34.239.25.180:3000/api/updateMenu/${editingMenu.id_menu}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ const Admin = () => {
 
     try {
       const token = await AsyncStorage.getItem('userToken');
-      const response = await fetch('http://192.168.216.1:5000/api/createUtilisateur', {
+      const response = await fetch('http://34.239.25.180:3000/api/createUtilisateur', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const Admin = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://192.168.216.1:5000/api/utilisateurs');
+        const response = await fetch('http://34.239.25.180:3000/api/utilisateurs');
         if (!response.ok) throw new Error('Erreur utilisateurs');
         const data: utilisateur[] = await response.json();
         setUsers(data);
@@ -168,7 +168,7 @@ const Admin = () => {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const response = await fetch('http://192.168.216.1:5000/api/menu');
+        const response = await fetch('http://34.239.25.180:3000/api/menu');
         if (!response.ok) throw new Error('Erreur menus');
         const data: Menu[] = await response.json();
         setMenus(data);

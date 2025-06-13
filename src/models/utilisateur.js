@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('mysql://root:root@localhost:3306/cesizen'); 
+const sequelize = new Sequelize('mysql://root:root@mysql:3306/cesizen');
 
 const utilisateur = sequelize.define('utilisateur', {
   id_utilisateur: {
@@ -13,7 +13,7 @@ const utilisateur = sequelize.define('utilisateur', {
   },
   prenom: {
     type: DataTypes.STRING,
-    allowNull: false 
+    allowNull: false  
   },
    mot_de_passe: {
     type: DataTypes.STRING,

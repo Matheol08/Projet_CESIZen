@@ -1,4 +1,5 @@
 version: '3.9'
+
 services:
   app:
     build: .
@@ -7,11 +8,12 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DB_HOST=${DB_HOST}
+      - PORT=3000
+      - DB_HOST=mysql
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
+      - DB_NAME=${DB_NAME_prod}
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - mysql
@@ -21,16 +23,31 @@ services:
       - .:/app
       - /app/node_modules
 
-
-
   mysql:
     image: mysql:latest
+    container_name: cesizen-db
     environment:
-       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-       - MYSQL_DATABASE=${DB_NAME}
-  
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+    ports:
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: cesizen-phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - mysql
     networks:
       - app-network
 

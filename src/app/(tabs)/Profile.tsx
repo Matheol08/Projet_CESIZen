@@ -54,7 +54,7 @@ function Profil() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.216.1:5000/api/auth/createUser', {
+      const response = await fetch('http://34.239.25.180:3000/api/auth/createUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prenom: firstName, nom: lastName, email, mot_de_passe }),
@@ -85,7 +85,7 @@ function Profil() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.216.1:5000/api/auth/login', {
+      const response = await fetch('http://34.239.25.180:3000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, mot_de_passe }),
@@ -142,7 +142,7 @@ function Profil() {
         return;
       }
 
-      const response = await fetch(`http://192.168.216.1:5000/api/updatePassword/resetPassword/${userId}`, {
+      const response = await fetch(`http://34.239.25.180:3000/api/updatePassword/resetPassword/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

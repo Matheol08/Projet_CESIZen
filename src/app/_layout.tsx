@@ -20,7 +20,7 @@ function Layout() {
       const storedRoleId = await AsyncStorage.getItem('id_role');    
       if (storedRoleId) {  
         setRoleId(Number(storedRoleId));  
-        setIsConnected(true);    
+        setIsConnected(true);     
       } 
       setIsLoading(false);
     };

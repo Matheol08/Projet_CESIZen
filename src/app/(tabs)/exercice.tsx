@@ -14,7 +14,7 @@ function Exercice() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://192.168.216.1:5000/api/exercice') 
+    fetch('http://34.239.25.180:3000/api/exercice') 
       .then(response => response.json())
       .then(data => {
         setExercisesData(data);

@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('mysql://root:root@localhost:3306/cesizen'); 
+const sequelize = new Sequelize('mysql://root:root@mysql:3306/cesizen');
 
 const menu = sequelize.define('Menu', {
   id_menu: {

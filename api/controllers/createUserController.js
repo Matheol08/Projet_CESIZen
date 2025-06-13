@@ -13,7 +13,6 @@ exports.createUser = async (req, res) => {
   }
 
   try {
-    // Vérifie si un utilisateur avec le même email existe déjà
     const existingUser = await utilisateur.findOne({
       where: { email }
     });
@@ -22,10 +21,8 @@ exports.createUser = async (req, res) => {
       return res.status(400).json({ message: 'Un utilisateur avec cet email existe déjà' });
     }
 
-    // Hachage du mot de passe
     const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
 
-    // Création de l'utilisateur
     const user = await utilisateur.create({
       prenom,
       nom,

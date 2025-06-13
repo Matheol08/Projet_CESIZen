@@ -1,4 +1,3 @@
-const { DataTypes } = require('sequelize');
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = new Sequelize('mysql://root:root@mysql:3306/cesizen');
 

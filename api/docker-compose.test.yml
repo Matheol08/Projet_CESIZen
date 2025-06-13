@@ -3,6 +3,7 @@ version: '3.9'
 services:
   app:
     build: .
+    command: npm test
     container_name: cesizen-app-test
     ports:
       - "3002:3000"

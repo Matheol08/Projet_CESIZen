@@ -27,12 +27,6 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
-    services:
-      docker:
-        image: docker:20.10.16
-        options: --privileged
-        ports:
-          - 2375:2375
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -45,8 +39,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ton-utilisateur/ton-projet/cesizen-app:${{ github.sha }} .
-          docker push ton-utilisateur/ton-projet/cesizen-app:${{ github.sha }}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cesizen-app:${{ github.sha }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/cesizen-app:${{ github.sha }}
 
   deploy:
     needs: build
@@ -60,5 +54,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /chemin/du/projet
-            docker-compose pull
-            docker-compose up -d --build
+            docker compose pull
+            docker compose up -d --build

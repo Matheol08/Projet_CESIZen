@@ -33,7 +33,7 @@ const connectWithRetry = async (retries = 10, delay = 3000) => {
   while (retries > 0) {
     try {
       await sequelize.authenticate();
-      console.log("✅ Connexion MySQL réussie");
+      console.log("✅ Connexion MySQL réussie en test deploiement");
 
       app.listen(port, () => {
         console.log(`🚀 Serveur démarré sur le port ${port}`);

@@ -31,7 +31,7 @@ jobs:
 
   deploy_dev:
     needs: build
-    #if: github.ref_name == 'develop'
+    if: github.ref_name == 'develop'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -42,7 +42,7 @@ jobs:
 
   test:
     needs: build
-   # if: github.ref_name == 'test'
+    if: github.ref_name == 'test'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -55,7 +55,7 @@ jobs:
 
   deploy_prod:
     needs: build
-   # if: github.ref_name == 'main'
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo

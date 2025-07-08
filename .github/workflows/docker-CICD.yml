@@ -40,7 +40,7 @@ jobs:
       - name: Deploy DEV with Docker Compose
         run: docker compose -f api/docker-compose.dev.yml up -d --build
 
-  test:
+  deploy_test:
     needs: build
     if: github.ref_name == 'test'
     runs-on: ubuntu-latest

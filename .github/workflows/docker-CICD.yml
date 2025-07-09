@@ -79,7 +79,7 @@ jobs:
           context: ./api
           file: ./api/Dockerfile
           push: true
-          tags: ghcr.io/Matheol08/Projet_CESIZen:main
+          tags: ghcr.io/matheol08/projet_cesizen:main
 
       - uses: webfactory/ssh-agent@v0.5.4
         with:

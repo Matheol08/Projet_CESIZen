@@ -14,19 +14,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push Docker image
-        run: |
-          docker build -t $IMAGE_NAME:${{ github.ref_name }} -f api/Dockerfile .
-          docker push $IMAGE_NAME:${{ github.ref_name }}
+      
+    uses: actions/checkout@v3
+    uses: actions/setup-node@v3
+    with:
+      node-version: '18'
+    name: Cache node_modules
+    id: cache-node_modules
+    uses: actions/cache@v3
+    with:
+    path: node_modules
+    key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+    name: Install dependencies
+    run: npm install
+    name: Build
+    run: npm run build
 
 
   deploy_dev:

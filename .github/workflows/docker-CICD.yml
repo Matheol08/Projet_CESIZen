@@ -30,7 +30,7 @@ jobs:
 
 
   deploy_dev:
-    needs: build
+    needs: build 
     if: github.ref_name == 'develop'
     runs-on: ubuntu-latest
     steps:

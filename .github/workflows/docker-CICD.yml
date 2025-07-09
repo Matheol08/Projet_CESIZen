@@ -79,11 +79,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
+      - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
+          context: ./api
+          file: ./api/Dockerfile
           push: true
           tags: ghcr.io/collaboratif-cda24-2/resource-guardian-dashboard:main
+
       - uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}

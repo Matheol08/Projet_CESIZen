@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: http://54.174.173.5:3000
+      url: http://34.239.25.180:3000
     if: github.ref_name == 'main'
     permissions:
       contents: read

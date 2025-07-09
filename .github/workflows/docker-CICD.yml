@@ -36,30 +36,24 @@ jobs:
         run: npm run build
 
 
-
-  deploy_dev:
-    needs: build 
-    if: github.ref_name == 'develop'
+  test:
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Deploy DEV with Docker Compose
-        run: docker compose -f api/docker-compose.dev.yml up -d --build
-
-  deploy_test:
-    needs: build
-    if: github.ref_name == 'test'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Run Tests with Docker Compose
-        run: |
-          docker compose -f api/docker-compose.test.yml up -d --build
-          docker compose -f api/docker-compose.test.yml down
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Cache node_modules
+        id: cache-node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        run: npm install
+      - name: Run Vitest
+        run: npm run test
 
   deploy-production:
     needs: build
@@ -85,7 +79,7 @@ jobs:
           context: ./api
           file: ./api/Dockerfile
           push: true
-          tags: ghcr.io/Projet_CESIZen:main
+          tags: ghcr.io/Matheol08/Projet_CESIZen:main
 
       - uses: webfactory/ssh-agent@v0.5.4
         with:

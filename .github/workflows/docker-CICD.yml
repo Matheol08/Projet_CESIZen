@@ -3,8 +3,7 @@ name: CI/CD Docker
 on:
   push:
     branches:
-      - main       
-      - develop    
+      - main      
       - test       
 
 env:
@@ -56,7 +55,7 @@ jobs:
         run: npm run test
 
   deploy-production:
-    needs: build
+    needs: [test]
     runs-on: ubuntu-latest
     environment:
       name: production

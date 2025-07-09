@@ -2,7 +2,8 @@ version: '3.9'
 
 services:
   app:
-    build: .
+    image: ghcr.io/matheol08/projet_cesizen:main
+
     container_name: cesizen-app-prod
     
     ports: 

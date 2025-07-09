@@ -5,7 +5,7 @@ exports.getMenus = async (req, res) => {
     const menus = await Menu.findAll(); 
     res.json({ 
       data: menus,
-      message: 'Menus récupérés avec succès 2'
+      // message: 'Menus récupérés avec succès 2'
     });
   } catch (error) {
     console.error('Erreur lors de la récupération des menus :', error);

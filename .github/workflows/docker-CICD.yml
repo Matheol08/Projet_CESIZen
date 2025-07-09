@@ -85,7 +85,7 @@ jobs:
           context: ./api
           file: ./api/Dockerfile
           push: true
-          tags: ghcr.io/collaboratif-cda24-2/resource-guardian-dashboard:main
+          tags: ghcr.io/Projet_CESIZen:main
 
       - uses: webfactory/ssh-agent@v0.5.4
         with:

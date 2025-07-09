@@ -2,10 +2,9 @@ version: '3.9'
 
 services:
   app:
-    image: ghcr.io/matheol08/projet_cesizen:main
-
+    build: .
     container_name: cesizen-app-prod
-    
+    image: ghcr.io/matheol08/projet_cesizen:main
     ports: 
       - "3000:3000"
     environment:

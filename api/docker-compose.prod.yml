@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   app:
-    image: matheo2004/monapp:main
+    build: .
     container_name: cesizen-app-prod
     ports:
       - "3000:3000"
@@ -19,6 +19,9 @@ services:
       - mysql
     networks:
       - app-network-prod
+    volumes:
+      - .:/app
+      - /app/node_modules
 
   mysql:
     image: mysql:latest

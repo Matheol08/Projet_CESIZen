@@ -54,6 +54,7 @@ jobs:
           docker compose -f api/docker-compose.test.yml down
 
   deploy-production:
+    needs: build .
     runs-on: ubuntu-latest
     environment:
       name: production

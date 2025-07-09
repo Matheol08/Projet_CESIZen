@@ -3,7 +3,7 @@ const Menu = require('../models/menu');
 exports.getMenus = async (req, res) => {
   try {
     const menus = await Menu.findAll(); 
-    res.json({
+    res.json({ 
       data: menus,
       message: 'Menus récupérés avec succès'
     });

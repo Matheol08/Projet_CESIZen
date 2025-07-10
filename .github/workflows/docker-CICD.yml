@@ -7,44 +7,32 @@ on:
       - test       
 
 env:
-  IMAGE_NAME: matheo2004/monapp
+  IMAGE_NAME: ghcr.io/matheol08/projet_cesizen
 
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
+    if: github.ref_name == 'main'
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Cache node_modules
-        id: cache-node_modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        run: npm install
 
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.token }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: .
-          file: api/Dockerfile
-          push: true
-          tags: ghcr.io/matheol08/projet_cesizen:${{ github.ref_name }}
+
+      - name: Install dependencies
+        run: npm install
+      - name: Buildgit 
+        run: npm run build
+     
 
 
 
@@ -67,37 +55,46 @@ jobs:
       - name: Run Vitest
         run: npm run test
 
-  deploy-production:
-    needs: [build-and-push-image, test]
+  deploy-image:
     runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: http://34.239.25.180:3000
     if: github.ref_name == 'main'
-    permissions:
-      contents: read
-      packages: write
+    needs: [build-and-push-image, test]
     steps:
-      - uses: actions/checkout@v3
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./api 
-          file: ./api/Dockerfile
-          push: true
-          tags: ghcr.io/matheol08/projet_cesizen:main
-
       - uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
       - run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
-          cd Projet_CESIZen/api && \
-          echo ${{ secrets.GITHUB_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin && \
-          docker-compose -f docker-compose.prod.yml up -d --pull always" 
+          sudo docker compose -f docker-compose.prod.yml up -d --pull always"
+
+  # deploy-production:
+  #   needs: [build-and-push-image, test]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: production
+  #     url: http://34.239.25.180:3000
+  #   if: github.ref_name == 'main'
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Login to GitHub Container Registry
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Build and push
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #       push: true
+  #       tags: ghcr.io/collaboratif-cda24-2/resource-guardian-dashboard:main
+  #       uses: webfactory/ssh-agent@v0.5.4
+  #       with:
+  #       ssh-private-key: ${{ secrets.SSH_KEY }}
+  #       run: |
+  #          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+  #          cd api && \
+  #          echo ${{ secrets.GITHUB_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin && \
+  #          VITE_API_URL=${{ vars.VITE_API_URL }} VITE_API_TIMEOUT=${{ vars.VITE_API_TIMEOUT }} sudo -E docker-compose -f docker-compose.prod.yml up -d --pull always"

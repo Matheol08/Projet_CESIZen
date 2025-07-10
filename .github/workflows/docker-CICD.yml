@@ -37,7 +37,8 @@ jobs:
           context: .
           file: api/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          tags: ghcr.io/matheol08/projet_cesizen:${{ github.ref_name }}
+
 
 
   test:

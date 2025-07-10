@@ -68,7 +68,9 @@ jobs:
       - run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin && \
+
           cd Projet_CESIZen/api && \
+          git pull && \
           docker-compose -f docker-compose.prod.yml build && \
           docker-compose -f docker-compose.prod.yml up -d --pull always"
 

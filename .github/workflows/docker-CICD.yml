@@ -64,7 +64,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
       - run: |
-          cd api && \
+          cd projet_cesizen/api && \
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
           sudo docker-compose -f docker-compose.prod.yml up -d --pull always"
 

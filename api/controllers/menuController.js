@@ -6,7 +6,7 @@ exports.getMenus = async (req, res) => {
     res.json({ 
       data: menus, 
        message: 'Menus récupérés avec succès'
-    });
+    }); 
   } catch (error) {
     console.error('Erreur lors de la récupération des menus :', error);
     res.status(500).json({ message: 'Erreur serveur' });

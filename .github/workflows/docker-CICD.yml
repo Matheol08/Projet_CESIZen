@@ -11,28 +11,29 @@ env:
 
 jobs:
   build-and-push-image:
-    runs-on: ubuntu-latest
-    if: github.ref_name == 'main'
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  runs-on: ubuntu-latest
+  if: github.ref_name == 'main'
+  permissions:
+    contents: read
+    packages: write
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Log in to the Container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-
-      - name: Install dependencies
-        run: npm install
-      - name: Buildgit 
-        run: npm run build
-     
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./api
+        file: ./api/Dockerfile
+        push: true
+        tags: ghcr.io/matheol08/projet_cesizen:main
 
 
 

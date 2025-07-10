@@ -4,7 +4,7 @@ exports.getMenus = async (req, res) => {
   try {
     const menus = await Menu.findAll(); 
     res.json({ 
-      data: menus,
+      data: menus, 
       // message: 'Menus récupérés avec succès 2'
     });
   } catch (error) {

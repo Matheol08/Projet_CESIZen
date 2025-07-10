@@ -35,6 +35,8 @@ jobs:
         push: true
         tags: ghcr.io/matheol08/projet_cesizen:main
 
+     
+
 
 
   test:
